@@ -1,6 +1,12 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"https/github.com/Seud-Behru/addis-eats-bacend/internal/order"
+)
+
+
 
 func main (){
 
@@ -31,5 +37,21 @@ func main (){
 		fmt.Println(name3[i])
 	}
 
+	var  x = 100
+	var y = &x
+	fmt.Println(*y)
+
+	//DAy 55 Lab 1 
+
+	subTotal:=order.LineTotal(300, 2)
+	fmt.Println("subTotal", subTotal)
+	serviceFee := order.ServiceFeeSantim(subTotal)
+	fmt.Println("serviceFee", serviceFee)
+	deliveryFee, err := order.DeliveryFeeSantim("Bole", )
+	fmt.Println("deliveryFee", deliveryFee)
+	test, err := order.DeliveryFeeSantim("Megenagna", )
+	fmt.Println("test", test, err)
+
+    
 	
 }
