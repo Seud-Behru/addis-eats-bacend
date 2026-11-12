@@ -6,7 +6,35 @@ import (
 	"https/github.com/Seud-Behru/addis-eats-bacend/internal/order"
 )
 
+func getDeliveryFee(area string) (int, error) {
+	fees := map[string]int{
+		"Bole": 3000, "Kazanchis": 3500,
+		"Piassa": 4000, "Megenagna": 4500,
+	}
 
+	fee, ok := fees[area] // comma-ok: 0, false
+	if !ok {
+		return 0, fmt.Errorf("unserved area: %s", area)
+	}
+
+	delete(fees, "Piassa")
+	fmt.Println(len(fees))
+
+	return fee, nil
+}
+type Dish struct {
+    Name        string
+    PriceSantim int
+    IsFasting   bool
+	}
+type Order struct {
+    Items []Dish
+    Area  string
+    Paid  bool
+	}
+
+func markPaidCopy(o Order)  { o.Paid = true }   // no effect
+func markPaid(o *Order)     { o.Paid = true }   // works
 
 func main (){
 
@@ -103,8 +131,34 @@ func main (){
 
 	fmt.Println(fee)
 	
-
+    fe, ok := getDeliveryFee("Ayat")
+    if ok != nil{
+       fmt.Println(ok)
+	}
+	fmt.Println(fe)
+	
 	
 	delete(fees, "Piassa")
 	fmt.Println(len(fees))
+
+	//structs, Pointers & Methods
+	
+	
+	// field names: clear, and safe to reorder
+	d := Dish{Name: "Shiro", PriceSantim: 12000, IsFasting: true}
+
+	fmt.Println(d.Name)
+
+	
+
+	order := Order{Area: "Bole"}
+ 
+	markPaidCopy(order)
+	fmt.Println(order.Paid)     // false
+	
+	markPaid(&order)            // & takes the address
+	fmt.Println(order.Paid)     // true
+	
+	p := &order
+	fmt.Println(p.Area)     
 }
