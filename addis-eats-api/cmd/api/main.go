@@ -2,43 +2,76 @@ package main
 
 import (
 	"fmt"
-
-	"https/github.com/Seud-Behru/addis-eats-bacend/internal/order"
+	"https/github.com/Seud-Behru/addis-eats-bacend/menu"
+	"log"
+	"net/http"
+	"os"
+	"time"
 )
 
-func getDeliveryFee(area string) (int, error) {
-	fees := map[string]int{
-		"Bole": 3000, "Kazanchis": 3500,
-		"Piassa": 4000, "Megenagna": 4500,
-	}
 
-	fee, ok := fees[area] // comma-ok: 0, false
-	if !ok {
-		return 0, fmt.Errorf("unserved area: %s", area)
-	}
 
-	delete(fees, "Piassa")
-	fmt.Println(len(fees))
 
-	return fee, nil
+
+
+type application struct {
+	logger *log.Logger
+	dishes menu.DishReader
 }
-type Dish struct {
-    Name        string
-    PriceSantim int
-    IsFasting   bool
-	}
-type Order struct {
-    Items []Dish
-    Area  string
-    Paid  bool
-	}
 
-func markPaidCopy(o Order)  { o.Paid = true }   // no effect
-func markPaid(o *Order)     { o.Paid = true }   // works
+
+
+ 
+
+
+
+
 
 func main (){
 
 	fmt.Println("hellow world")
+
+// Build the shelf
+	app := &application{
+		logger: log.New(os.Stdout, "", log.LstdFlags),
+		dishes: menu.NewMemoryStore(),
+	}
+
+	// Read the address from the environment, with a default
+	addr := os.Getenv("API_ADDR")
+	if addr == "" {
+		addr = ":8080"
+	}
+
+	// Build the server with timeouts
+	srv := &http.Server{
+		Addr:         addr,
+		Handler:      app.routes(),
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  time.Minute,
+	}
+
+	// Open the doors and stay open
+	log.Printf("listening on %s", addr)
+	log.Fatal(srv.ListenAndServe())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	/*var name string = "seud"
 	 age := 20
@@ -67,7 +100,7 @@ func main (){
 
 	var  x = 100
 	var y = &x
-	fmt.Println(*y)*/
+	fmt.Println(*y)
 
 	//DAy 55 Lab 1 
 
@@ -160,5 +193,95 @@ func main (){
 	fmt.Println(order.Paid)     // true
 	
 	p := &order
-	fmt.Println(p.Area)     
+	fmt.Println(p.Area)   
+	
+	
+	g := greet{
+		name: "Abebe",
+	}
+
+	GetGreeting(g)
+
+	// creating serve
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /health", health)
+	log.Println("listening on :8080")
+	log.Fatal(http.ListenAndServe(":8080", mux))
+	*/
 }
+
+
+
+
+/*func health(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("ok"))
+}
+
+type Handler interface {
+    ServeHTTP(w http.ResponseWriter, r *http.Request)
+}
+type menuHandler struct {
+	dishes []menu.Dish   // ← the fridge
+}
+
+func (h menuHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// h.dishes is right here, no globals needed
+}
+
+func getDeliveryFee(area string) (int, error) {
+	fees := map[string]int{
+		"Bole": 3000, "Kazanchis": 3500,
+		"Piassa": 4000, "Megenagna": 4500,
+	}
+
+	fee, ok := fees[area] // comma-ok: 0, false
+	if !ok {
+		return 0, fmt.Errorf("unserved area: %s", area)
+	}
+
+	delete(fees, "Piassa")
+	fmt.Println(len(fees))
+
+	return fee, nil
+}
+type Dish struct {
+    Name        string
+    PriceSantim int
+    IsFasting   bool
+	}
+type Order struct {
+    Items []Dish
+    Area  string
+    Paid  bool
+	}
+
+func markPaidCopy(o Order)  {  o.Paid = true }   // no effect
+func markPaid(o *Order)     { o.Paid = true }   // works
+
+
+
+type Greet interface{
+	SayHello() string
+}
+
+
+
+
+type greet struct{
+	name string
+}
+
+
+
+func(g greet) SayHello() string{
+  return "Good Evening "+g.name
+}
+
+
+
+
+
+func GetGreeting(g Greet){
+	fmt.Println(g.SayHello())
+}
+	*/
