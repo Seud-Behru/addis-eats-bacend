@@ -1,0 +1,59 @@
+package order
+
+import (
+	"errors"
+	"https/github.com/Seud-Behru/addis-eats-bacend/internal/delivery"
+	"https/github.com/Seud-Behru/addis-eats-bacend/menu"
+	"time"
+)
+
+var (
+	ErrEmptyOrder = errors.New("order must contain at least one item")
+	ErrNotFound   = errors.New("order not found")
+)
+
+type Order struct {
+	ID          string      `json:"id"`
+	Area        string      `json:"area"`
+	Phone       string      `json:"phone"`
+	Items       []menu.Dish `json:"items"`
+	Status      Status      `json:"status"` // Custom enum type with custom JSON marshaling
+	TotalSantim int         `json:"total_santim"` // Money remains integer santim across calculation and output
+	PlacedAt    time.Time   `json:"placed_at"`
+}
+func New(area, phone string, items []menu.Dish) Order {
+	return Order{
+		Area:   area,
+		Phone:  phone,
+		Items:  items,
+		Status: StatusPlaced,
+	}
+}
+
+// ComputeTotal calculates pricing, 5% service fees, and delivery fees.
+// TEACHING NOTE: Pricing logic is calculated on the server using validated dish data.
+// Clients must never supply item prices or totals in request payloads.
+func (o *Order) ComputeTotal() (int, error) {
+	if len(o.Items) == 0 {
+		return 0, ErrEmptyOrder
+	}
+
+	subtotal := 0
+	for _, item := range o.Items {
+		subtotal += item.PriceSantim
+	}
+
+	serviceFee := int(float64(subtotal) * 0.05)
+
+	deliveryFee := 0
+	if subtotal < 50000 { // Free delivery for subtotals >= 50,000 santim (500 ETB)
+		fee, err := delivery.FeeSantim(o.Area)
+		if err != nil {
+			return 0, err
+		}
+		deliveryFee = fee
+	}
+
+	o.TotalSantim = subtotal + serviceFee + deliveryFee
+	return o.TotalSantim, nil
+}
