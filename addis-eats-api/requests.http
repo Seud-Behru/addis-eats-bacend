@@ -1,0 +1,49 @@
+### 1. Multiple Validation Failures (Expect 422 with 3 Field Errors)
+POST http://localhost:8080/v1/orders
+Content-Type: application/json
+
+{
+  "area": "Ayat",
+  "phone": "9112233",
+  "dish_ids": ["d1", "d1"]
+}
+
+# Expect: HTTP 422 Unprocessable Entity
+# Response:
+# {
+#   "error": {
+#     "message": "the request was not valid",
+#     "fields": {
+#       "area": "must be a served delivery area",
+#       "dish_ids": "must not contain duplicates",
+#       "phone": "must be a valid TeleBirr number"
+#     }
+#   }
+# }
+
+
+### 2. Normalised Phone Success (+251911223344 -> 0911223344)
+POST http://localhost:8080/v1/orders
+Content-Type: application/json
+
+{
+  "area": "Bole",
+  "phone": "+251911223344",
+  "dish_ids": ["d1", "d2"]
+}
+
+# Expect: HTTP 201 Created -> "phone": "0911223344"
+
+
+### 3. Unknown Dish ID (Expect 422 Unprocessable Entity)
+POST http://localhost:8080/v1/orders
+Content-Type: application/json
+
+{
+  "area": "Bole",
+  "phone": "0911223344",
+  "dish_ids": ["d999"]
+}
+
+# Expect: HTTP 422 Unprocessable Entity
+# Response: {"error":{"fields":{"dish_ids":"dish d999 does not exist"},"message":"the request was not valid"}}
