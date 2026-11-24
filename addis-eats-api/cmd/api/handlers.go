@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-// createOrderRequest is what the client sends us
+
 
 // health is a simple "are we alive?" check
 func (app *application) health(w http.ResponseWriter, r *http.Request) {
@@ -40,11 +40,5 @@ func (app *application) showDish(w http.ResponseWriter, r *http.Request) {
 	default:
 		writeJSON(w, http.StatusOK, dish)
 	}
-}
-func (app *application) createOrder(w http.ResponseWriter, r *http.Request){
-	data  := app.Order{} 
-
-	println(data)
-
 }
 

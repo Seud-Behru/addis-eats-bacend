@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"https/github.com/Seud-Behru/addis-eats-bacend/internal/order"
 	"https/github.com/Seud-Behru/addis-eats-bacend/menu"
 	"log"
 	"net/http"
@@ -17,6 +18,7 @@ import (
 type application struct {
 	logger *log.Logger
 	dishes menu.DishReader
+	orders order.Store
 }
 
 
