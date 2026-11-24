@@ -7,11 +7,7 @@ import (
 )
 
 // createOrderRequest is what the client sends us
-type createOrderRequest struct {
-	Area    string   `json:"area"`
-	DishIDs []string `json:"dish_ids"`
-	Phone   string   `json:"phone"`
-}
+
 // health is a simple "are we alive?" check
 func (app *application) health(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("ok"))
@@ -46,7 +42,7 @@ func (app *application) showDish(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func (app *application) createOrder(w http.ResponseWriter, r *http.Request){
-	data  := createOrderRequest{} 
+	data  := app.Order{} 
 
 	println(data)
 
